@@ -2,12 +2,12 @@ package com.led.sign.update
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
+import java.net.HttpURLConnection
 import java.net.URL
 
 data class UpdateInfo(
@@ -22,39 +22,46 @@ object UpdateChecker {
     private const val REPO_NAME = "XMLED"
     private const val CURRENT_VERSION = "1.0.1"
 
-    suspend fun checkUpdate(): UpdateInfo? = withContext(Dispatchers.IO) {
+    suspend fun checkUpdate(): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         try {
             val url = URL("https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest")
-            val connection = url.openConnection()
-            connection.connectTimeout = 5000
-            connection.readTimeout = 5000
-            val response = connection.inputStream.bufferedReader().use { it.readText() }
+            val connection = url.openConnection() as HttpURLConnection
+            connection.setRequestProperty("User-Agent", "XMLED-Android")
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
 
+            val responseCode = connection.responseCode
+            if (responseCode != 200) {
+                return@withContext Result.failure(Exception("HTTP $responseCode"))
+            }
+
+            val response = connection.inputStream.bufferedReader().use { it.readText() }
             val json = JSONObject(response)
-            val tagName = json.getString("tag_name").trimStart('v')
+            val tagName = json.getString("tag_name").removePrefix("v")
             val body = json.optString("body", "")
             val assets = json.getJSONArray("assets")
 
             if (tagName > CURRENT_VERSION && assets.length() > 0) {
                 val apkUrl = assets.getJSONObject(0).getString("browser_download_url")
-                UpdateInfo(version = tagName, downloadUrl = apkUrl, body = body)
+                Result.success(UpdateInfo(version = tagName, downloadUrl = apkUrl, body = body))
             } else {
-                null
+                Result.success(null)
             }
         } catch (e: Exception) {
-            null
+            Result.failure(e)
         }
     }
 
-    suspend fun downloadAndInstall(context: Context, downloadUrl: String) = withContext(Dispatchers.IO) {
+    suspend fun downloadAndInstall(context: Context, downloadUrl: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val url = URL(downloadUrl)
-            val connection = url.openConnection()
-            connection.connectTimeout = 10000
-            connection.readTimeout = 30000
+            val connection = url.openConnection() as HttpURLConnection
+            connection.setRequestProperty("User-Agent", "XMLED-Android")
+            connection.connectTimeout = 30000
+            connection.readTimeout = 60000
 
             val file = File(context.cacheDir, "update.apk")
-            url.openStream().use { input ->
+            connection.inputStream.use { input ->
                 file.outputStream().use { output ->
                     input.copyTo(output)
                 }
@@ -73,8 +80,10 @@ object UpdateChecker {
                 }
                 context.startActivity(intent)
             }
+            Result.success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
+            Result.failure(e)
         }
     }
 }

@@ -761,14 +761,22 @@ fun SettingsDialog(
 
                     LaunchedEffect(isChecking) {
                         if (isChecking) {
-                            val update = com.led.sign.update.UpdateChecker.checkUpdate()
-                            if (update != null) {
-                                updateMessage = "发现新版本 v${update.version}，正在下载..."
-                                com.led.sign.update.UpdateChecker.downloadAndInstall(context, update.downloadUrl)
-                                updateMessage = ""
-                            } else {
-                                updateMessage = "当前已是最新版本"
-                            }
+                            val result = com.led.sign.update.UpdateChecker.checkUpdate()
+                            result.fold(
+                                onSuccess = { update ->
+                                    if (update != null) {
+                                        updateMessage = "发现新版本 v${update.version}，正在下载..."
+                                        val downloadResult = com.led.sign.update.UpdateChecker.downloadAndInstall(context, update.downloadUrl)
+                                        downloadResult.fold(
+                                            onSuccess = { updateMessage = "" },
+                                            onFailure = { updateMessage = "下载失败: ${it.message}" }
+                                        )
+                                    } else {
+                                        updateMessage = "当前已是最新版本"
+                                    }
+                                },
+                                onFailure = { updateMessage = "检查失败: ${it.message}" }
+                            )
                             isChecking = false
                         }
                     }
