@@ -719,6 +719,55 @@ fun SettingsDialog(
                             context.startActivity(intent)
                         }
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    var isChecking by remember { mutableStateOf(false) }
+                    var updateMessage by remember { mutableStateOf("") }
+
+                    Button(
+                        onClick = {
+                            isChecking = true
+                            updateMessage = ""
+                        },
+                        enabled = !isChecking,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+                        if (isChecking) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text("检查更新", color = MaterialTheme.colorScheme.onSecondaryContainer)
+                    }
+
+                    if (updateMessage.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            updateMessage,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    LaunchedEffect(isChecking) {
+                        if (isChecking) {
+                            val update = com.led.sign.update.UpdateChecker.checkUpdate()
+                            if (update != null) {
+                                updateMessage = "发现新版本 v${update.version}，正在下载..."
+                                com.led.sign.update.UpdateChecker.downloadAndInstall(context, update.downloadUrl)
+                                updateMessage = ""
+                            } else {
+                                updateMessage = "当前已是最新版本"
+                            }
+                            isChecking = false
+                        }
+                    }
                 }
             }
         },
