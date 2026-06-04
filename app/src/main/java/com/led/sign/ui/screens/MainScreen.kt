@@ -68,10 +68,11 @@ fun MainScreen(
                         .size(56.dp)
                         .clickable { showThemeDialog = true },
                     shape = CircleShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                    color = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Palette, contentDescription = "主题", tint = MaterialTheme.colorScheme.onSurface)
+                        Icon(Icons.Default.Palette, contentDescription = "主题", 
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 }
 
@@ -81,10 +82,11 @@ fun MainScreen(
                         .size(56.dp)
                         .clickable { showSettingsDialog = true },
                     shape = CircleShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                    color = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Settings, contentDescription = "设置", tint = MaterialTheme.colorScheme.onSurface)
+                        Icon(Icons.Default.Settings, contentDescription = "设置", 
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 }
 
@@ -510,10 +512,11 @@ fun SettingsDialog(
                             .size(48.dp)
                             .clickable { if (config.fontSize > 16f) onConfigChange(config.copy(fontSize = config.fontSize - 4f)) },
                         shape = RoundedCornerShape(14.dp),
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh
+                        color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Remove, contentDescription = "减小", modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Remove, contentDescription = "减小", modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
                     
@@ -568,10 +571,11 @@ fun SettingsDialog(
                             .size(48.dp)
                             .clickable { if (config.fontSize < 200f) onConfigChange(config.copy(fontSize = config.fontSize + 4f)) },
                         shape = RoundedCornerShape(14.dp),
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh
+                        color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Add, contentDescription = "增大", modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Add, contentDescription = "增大", modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
                 }
