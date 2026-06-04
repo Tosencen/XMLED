@@ -20,7 +20,7 @@ object UpdateChecker {
 
     private const val REPO_OWNER = "Tosencen"
     private const val REPO_NAME = "XMLED"
-    private const val CURRENT_VERSION = "1.0.1"
+    private const val CURRENT_VERSION = "1.0.2"
 
     suspend fun checkUpdate(): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         try {
