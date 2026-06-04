@@ -16,9 +16,9 @@
 
 ## 截图
 
-| 首页 | 全屏预览 | 设置 |
-|:---:|:---:|:---:|
-| ![](screenshots/home.png) | ![](screenshots/fullscreen.png) | ![](screenshots/settings.png) |
+| 首页 | 全屏预览 | 设置 | 主题 |
+|:---:|:---:|:---:|:---:|
+| ![](screenshots/001.png) | ![](screenshots/002.png) | ![](screenshots/003.png) | ![](screenshots/004.png) |
 
 ## 技术栈
 
