@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.led.sign.model.LedConfig
 import com.led.sign.model.ScrollDirection
 import com.led.sign.ui.theme.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -727,11 +728,33 @@ fun SettingsDialog(
 
                     var isChecking by remember { mutableStateOf(false) }
                     var updateMessage by remember { mutableStateOf("") }
+                    val updateScope = rememberCoroutineScope()
 
                     Button(
                         onClick = {
-                            isChecking = true
-                            updateMessage = ""
+                            if (!isChecking) {
+                                isChecking = true
+                                updateMessage = ""
+                                updateScope.launch {
+                                    val result = com.led.sign.update.UpdateChecker.checkUpdate()
+                                    result.fold(
+                                        onSuccess = { update ->
+                                            if (update != null) {
+                                                updateMessage = "发现新版本 v${update.version}，正在下载..."
+                                                val downloadResult = com.led.sign.update.UpdateChecker.downloadAndInstall(context, update.downloadUrl)
+                                                downloadResult.fold(
+                                                    onSuccess = { updateMessage = "" },
+                                                    onFailure = { updateMessage = "下载失败: ${it.message}" }
+                                                )
+                                            } else {
+                                                updateMessage = "当前已是最新版本"
+                                            }
+                                        },
+                                        onFailure = { updateMessage = "检查失败: ${it.message}" }
+                                    )
+                                    isChecking = false
+                                }
+                            }
                         },
                         enabled = !isChecking,
                         shape = RoundedCornerShape(12.dp),
@@ -757,28 +780,6 @@ fun SettingsDialog(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-
-                    LaunchedEffect(isChecking) {
-                        if (isChecking) {
-                            val result = com.led.sign.update.UpdateChecker.checkUpdate()
-                            result.fold(
-                                onSuccess = { update ->
-                                    if (update != null) {
-                                        updateMessage = "发现新版本 v${update.version}，正在下载..."
-                                        val downloadResult = com.led.sign.update.UpdateChecker.downloadAndInstall(context, update.downloadUrl)
-                                        downloadResult.fold(
-                                            onSuccess = { updateMessage = "" },
-                                            onFailure = { updateMessage = "下载失败: ${it.message}" }
-                                        )
-                                    } else {
-                                        updateMessage = "当前已是最新版本"
-                                    }
-                                },
-                                onFailure = { updateMessage = "检查失败: ${it.message}" }
-                            )
-                            isChecking = false
-                        }
                     }
                 }
             }
