@@ -706,7 +706,7 @@ fun SettingsDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "XMLED v1.0.0",
+                        "XMLED v1.0.1",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -736,18 +736,18 @@ fun SettingsDialog(
                         enabled = !isChecking,
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
                     ) {
                         if (isChecking) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(16.dp),
                                 strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                         }
-                        Text("检查更新", color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        Text("检查更新", color = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
 
                     if (updateMessage.isNotEmpty()) {
