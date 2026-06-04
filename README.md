@@ -30,7 +30,7 @@
 
 <div align="center">
 
-| 首页 | 全屏预览 | 设置 | 主题 |
+| 首页 | 主题 | 设置 | 全屏预览 |
 |:---:|:---:|:---:|:---:|
 | ![首页](screenshots/001.png) | ![主题](screenshots/002.png) | ![设置](screenshots/003.png) | ![全屏](screenshots/004.png) |
 
